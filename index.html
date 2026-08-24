@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lost & Found QR</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root{
+      --blue:#2563eb; --blue2:#4f46e5; --text:#13213a; --muted:#64748b;
+      --bg:#f6f9ff; --card:#fff; --border:#dbe5f5; --dark:#13243f;
+      --green:#059669; --red:#e11d48;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text);background:var(--bg)}
+    nav{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    .nav{max-width:1100px;margin:auto;padding:15px 20px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:10px;align-items:center;font-weight:800;font-size:20px}
+    .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:white;display:grid;place-items:center;font-size:22px}
+    .links{display:flex;gap:24px}.links a{color:#52627b;text-decoration:none;font-size:14px;font-weight:600}.links a:hover{color:var(--blue)}
+    .hero{max-width:1100px;margin:auto;padding:75px 20px 65px;display:grid;grid-template-columns:1.05fr .95fr;gap:50px;align-items:center}
+    .eyebrow{color:var(--blue);font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:13px}
+    h1{font-size:clamp(42px,6vw,68px);line-height:1.02;margin:12px 0 20px;letter-spacing:-.045em}
+    h1 span{color:var(--blue)}
+    .hero p{font-size:18px;line-height:1.7;color:var(--muted);max-width:590px}
+    .buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+    button,.btn{border:0;border-radius:12px;padding:13px 19px;font-weight:750;cursor:pointer;font-size:14px;text-decoration:none;display:inline-block}
+    .primary{background:linear-gradient(135deg,var(--blue),var(--blue2));color:white;box-shadow:0 10px 24px #2563eb30}
+    .secondary{background:white;color:var(--blue);border:1px solid #bcd0f5}
+    .hero-card{min-height:330px;border-radius:30px;background:linear-gradient(145deg,#dceaff,#eef2ff);display:grid;place-items:center;position:relative;overflow:hidden}
+    .backpack{font-size:120px;filter:drop-shadow(0 18px 15px #496b9a30)}
+    .qr-tag{position:absolute;background:white;border-radius:15px;padding:13px;box-shadow:0 15px 35px #233d6630;right:17%;bottom:18%;font-size:38px}
+    section{max-width:1100px;margin:auto;padding:60px 20px}
+    .section-title{text-align:center;margin-bottom:32px}.section-title h2{font-size:34px;margin:0 0 8px}.section-title p{color:var(--muted)}
+    .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+    .step,.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:25px;box-shadow:0 8px 30px #244b8b0a}
+    .step-icon{width:58px;height:58px;border-radius:50%;background:#e8f0ff;display:grid;place-items:center;font-size:25px;margin:auto auto 18px}
+    .step{text-align:center}.step h3{font-size:17px;margin:0 0 8px}.step p{color:var(--muted);font-size:14px;line-height:1.55;margin:0}
+    .actions{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .action{display:flex;align-items:center;gap:17px}.action .icon{font-size:28px}.action h3{margin:0 0 5px}.action p{margin:0;color:var(--muted);font-size:13px}
+    .forms{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+    .card h2{margin-top:0}.field{margin:13px 0}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;outline:none;font:inherit}.field textarea{min-height:80px;resize:vertical}.field input:focus,.field textarea:focus{border-color:var(--blue)}
+    .qr-result{display:none;margin-top:18px;padding:18px;background:#f1f6ff;border-radius:14px;text-align:center}.qr-result h3{margin-top:0}.qr-box{display:flex;justify-content:center;margin:15px}
+    .searchbar{display:flex;gap:10px}.searchbar input{flex:1;padding:13px;border:1px solid var(--border);border-radius:11px;font:inherit}
+    .items{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:20px}.item{background:white;border:1px solid var(--border);border-radius:14px;padding:17px}.item h3{margin:0 0 7px}.item p{margin:5px 0;color:var(--muted);font-size:13px}.badge{display:inline-block;padding:5px 8px;border-radius:20px;font-size:11px;font-weight:800}.lost{background:#ffe8ef;color:var(--red)}.found{background:#dcfce9;color:var(--green)}
+    .notice{margin-top:12px;color:var(--muted);font-size:13px}
+    footer{background:var(--dark);color:#dce7f8;margin-top:30px}.footer{max-width:1100px;margin:auto;padding:38px 20px;display:flex;justify-content:space-between;gap:30px}.footer p{color:#9fb0c8;font-size:13px}
+    @media(max-width:800px){.hero{grid-template-columns:1fr;padding-top:45px}.steps{grid-template-columns:1fr 1fr}.actions,.forms,.items{grid-template-columns:1fr}.links{display:none}.footer{flex-direction:column}}
+    @media(max-width:500px){.steps{grid-template-columns:1fr}.hero-card{min-height:250px}.buttons>*{width:100%;text-align:center}}
+  </style>
+</head>
+<body>
+<nav>
+  <div class="nav">
+    <div class="brand"><div class="logo">⌗</div> Lost & Found</div>
+    <div class="links">
+      <a href="#home">Home</a><a href="#report">Report</a><a href="#register">QR Tag</a><a href="#search">Search</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+<section class="hero" id="home">
+  <div>
+    <div class="eyebrow">Scan • Report • Reunite</div>
+    <h1>Lost Something?<br><span>Let QR Help!</span></h1>
+    <p>A simple QR-based system that helps people report lost items, identify found items, and reconnect them with their owners.</p>
+    <div class="buttons">
+      <a class="btn primary" href="#report">＋ Report Lost Item</a>
+      <a class="btn secondary" href="#search">⌕ Search Items</a>
+    </div>
+  </div>
+  <div class="hero-card"><div class="backpack">🎒</div><div class="qr-tag">▦</div></div>
+</section>
+
+<section>
+  <div class="section-title"><h2>How It Works?</h2><p>Four simple steps to get your item back.</p></div>
+  <div class="steps">
+    <div class="step"><div class="step-icon">🏷️</div><h3>1. Add QR Tag</h3><p>Register your item and generate a unique QR code.</p></div>
+    <div class="step"><div class="step-icon">📝</div><h3>2. Report</h3><p>If lost or found, submit the item details on the website.</p></div>
+    <div class="step"><div class="step-icon">📱</div><h3>3. Scan</h3><p>A finder can scan the QR code to view the safe contact page.</p></div>
+    <div class="step"><div class="step-icon">🤝</div><h3>4. Reunite</h3><p>The owner and finder can arrange a safe return.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="section-title"><h2>Quick Actions</h2><p>Choose what you want to do.</p></div>
+  <div class="actions">
+    <a class="card action" href="#report" style="text-decoration:none;color:inherit"><div class="icon">🚨</div><div><h3>Report Lost</h3><p>Tell us what you lost.</p></div></a>
+    <a class="card action" href="#report" style="text-decoration:none;color:inherit"><div class="icon">🔎</div><div><h3>Report Found</h3><p>Help an owner find their item.</p></div></a>
+    <a class="card action" href="#search" style="text-decoration:none;color:inherit"><div class="icon">📋</div><div><h3>View Items</h3><p>Browse demo lost & found records.</p></div></a>
+  </div>
+</section>
+
+<section id="register">
+  <div class="section-title"><h2>Create Your QR Tag</h2><p>Enter basic item details and generate a QR code.</p></div>
+  <div class="card">
+    <div class="field"><label>Item Name</label><input id="qrItem" placeholder="e.g. Black Backpack"></div>
+    <div class="field"><label>Owner / Identifier</label><input id="qrOwner" placeholder="e.g. Student ID or nickname"></div>
+    <button class="primary" onclick="generateQR()">Generate QR Code</button>
+    <div class="qr-result" id="qrResult"><h3>Your QR Tag</h3><div class="qr-box" id="qrcode"></div><p id="qrText"></p><button class="secondary" onclick="window.print()">Print / Save QR</button></div>
+  </div>
+</section>
+
+<section id="report">
+  <div class="section-title"><h2>Report an Item</h2><p>This prototype stores records in your browser using localStorage.</p></div>
+  <div class="forms">
+    <div class="card">
+      <h2>Report Lost / Found</h2>
+      <div class="field"><label>Item Name</label><input id="itemName" placeholder="e.g. Blue Water Bottle"></div>
+      <div class="field"><label>Status</label><select id="itemStatus"><option value="Lost">Lost</option><option value="Found">Found</option></select></div>
+      <div class="field"><label>Location</label><input id="itemLocation" placeholder="e.g. College Canteen"></div>
+      <div class="field"><label>Description</label><textarea id="itemDesc" placeholder="Color, identifying marks, etc."></textarea></div>
+      <button class="primary" onclick="addItem()">Submit Report</button>
+      <div class="notice" id="reportNotice"></div>
+    </div>
+    <div class="card">
+      <h2>Demo Flow</h2>
+      <p style="color:var(--muted);line-height:1.7">Imagine a student loses a bottle with a QR tag. Another student finds it, scans the QR code, sees the item page, and uses the provided safe contact method to return it.</p>
+      <p style="color:var(--muted);line-height:1.7"><b>For your DTPL:</b> this prototype demonstrates the user interface and core idea. A real deployment could add a database, login, email/SMS notifications and secure contact sharing.</p>
+    </div>
+  </div>
+</section>
+
+<section id="search">
+  <div class="section-title"><h2>Search Lost & Found</h2><p>Find an item by name, location, or description.</p></div>
+  <div class="card">
+    <div class="searchbar"><input id="searchInput" oninput="renderItems()" placeholder="Search items..."><button class="primary" onclick="renderItems()">Search</button></div>
+    <div class="items" id="items"></div>
+  </div>
+</section>
+</main>
+
+<footer><div class="footer"><div><h3>⌗ Lost & Found</h3><p>Scan • Report • Reunite</p></div><div><h4>Project Prototype</h4><p>Built as a simple DTPL web project.</p></div><div><h4>© 2026 Lost & Found</h4><p>Demo website — no real personal data required.</p></div></div></footer>
+
+<script>
+const demoItems = [
+  {name:"Black Backpack",status:"Lost",location:"College Library",desc:"Black backpack with a small keychain."},
+  {name:"Blue Water Bottle",status:"Found",location:"Canteen",desc:"Blue bottle found near the entrance."},
+  {name:"Wireless Earbuds Case",status:"Lost",location:"Classroom 204",desc:"White charging case."}
+];
+
+function getItems(){
+  const saved = JSON.parse(localStorage.getItem("lostFoundItems") || "[]");
+  return [...saved, ...demoItems];
+}
+function addItem(){
+  const name=itemName.value.trim(), status=itemStatus.value, location=itemLocation.value.trim(), desc=itemDesc.value.trim();
+  if(!name || !location){reportNotice.textContent="Please enter the item name and location.";return;}
+  const saved=JSON.parse(localStorage.getItem("lostFoundItems") || "[]");
+  saved.unshift({name,status,location,desc});
+  localStorage.setItem("lostFoundItems",JSON.stringify(saved));
+  reportNotice.textContent="✓ Report submitted successfully!";
+  itemName.value=itemLocation.value=itemDesc.value="";
+  renderItems();
+}
+function renderItems(){
+  const q=(searchInput.value||"").toLowerCase();
+  const filtered=getItems().filter(x=>(x.name+" "+x.location+" "+x.desc).toLowerCase().includes(q));
+  items.innerHTML=filtered.length ? filtered.map(x=>`
+    <div class="item"><span class="badge ${x.status==="Lost"?"lost":"found"}">${x.status.toUpperCase()}</span>
+    <h3>${escapeHtml(x.name)}</h3><p>📍 ${escapeHtml(x.location)}</p><p>${escapeHtml(x.desc||"No description provided.")}</p></div>`).join("") :
+    '<p style="color:var(--muted)">No matching items found.</p>';
+}
+function generateQR(){
+  const item=qrItem.value.trim(), owner=qrOwner.value.trim();
+  if(!item){alert("Please enter an item name.");return;}
+  qrcode.innerHTML="";
+  const data=location.origin+location.pathname+"?item="+encodeURIComponent(item)+"&owner="+encodeURIComponent(owner);
+  new QRCode(qrcode,{text:data,width:180,height:180,colorDark:"#13213a",colorLight:"#ffffff"});
+  qrText.textContent="QR created for: "+item;
+  qrResult.style.display="block";
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
+renderItems();
+</script>
+</body>
+</html>
